@@ -73,7 +73,7 @@ RCT_EXPORT_METHOD(start: (NSString *)port
         return;
     }
 
-    [_webServer addGETHandlerForBasePath:@"/" directoryPath:self.www_root indexFilename:@"index.html" cacheAge:3600 allowRangeRequests:YES];
+    [_webServer addGETHandlerForBasePath:@"/" directoryPath:self.www_root indexFilename:@"index.html" cacheAge:0 allowRangeRequests:YES];
 
     NSError *error;
     NSMutableDictionary* options = [NSMutableDictionary dictionary];
