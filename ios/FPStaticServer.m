@@ -95,25 +95,26 @@ RCT_EXPORT_METHOD(start: (NSString *)port
         [options setObject:@2.0 forKey:GCDWebServerOption_ConnectedStateCoalescingInterval];
     }
 
+	dispatch_async(dispatch_get_main_queue(), ^{
+		NSError *error;
+		if([_webServer startWithOptions:options error:&error]) {
+			NSNumber *listenPort = [NSNumber numberWithUnsignedInteger:_webServer.port];
+			self.port = listenPort;
 
-    if([_webServer startWithOptions:options error:&error]) {
-        NSNumber *listenPort = [NSNumber numberWithUnsignedInteger:_webServer.port];
-        self.port = listenPort;
+			if(_webServer.serverURL == NULL) {
+				reject(@"server_error", @"StaticServer could not start", error);
+			} else {
+				self.url = [NSString stringWithFormat: @"%@://%@:%@", [_webServer.serverURL scheme], [_webServer.serverURL host], [_webServer.serverURL port]];
+				NSLog(@"Started StaticServer at URL %@", self.url);
+				resolve(self.url);
+			}
+		} else {
+			NSLog(@"Error starting StaticServer: %@", error);
 
-        if(_webServer.serverURL == NULL) {
-            reject(@"server_error", @"StaticServer could not start", error);
-        } else {
-            self.url = [NSString stringWithFormat: @"%@://%@:%@", [_webServer.serverURL scheme], [_webServer.serverURL host], [_webServer.serverURL port]];
-            NSLog(@"Started StaticServer at URL %@", self.url);
-            resolve(self.url);
-        }
-    } else {
-        NSLog(@"Error starting StaticServer: %@", error);
+			reject(@"server_error", @"StaticServer could not start", error);
 
-        reject(@"server_error", @"StaticServer could not start", error);
-
-    }
-
+		}
+	});
 }
 
 RCT_EXPORT_METHOD(stop) {
