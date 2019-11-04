@@ -75,7 +75,6 @@ RCT_EXPORT_METHOD(start: (NSString *)port
 
     [_webServer addGETHandlerForBasePath:@"/" directoryPath:self.www_root indexFilename:@"index.html" cacheAge:0 allowRangeRequests:YES];
 
-    NSError *error;
     NSMutableDictionary* options = [NSMutableDictionary dictionary];
 
 
